@@ -4,6 +4,8 @@
 #[allow(unused)]
 use panic_halt;
 
+mod tnarx;
+
 use core::fmt::Write;
 use embedded_graphics::fonts::Font12x16;
 use embedded_graphics::prelude::*;
@@ -102,23 +104,23 @@ fn main() -> ! {
     let en = it.next().unwrap();
     let _ = it.next().unwrap();
     // Shift 1 Done
-    let pcdrst = it.next().unwrap();
+    let _pcdrst = it.next().unwrap();
     // this pin is unused
-    let pcdled = it.next().unwrap();
+    let _pcdled = it.next().unwrap();
     let _ = it.next().unwrap();
-    let pcddc = it.next().unwrap();
-    let pcdce = it.next().unwrap();
-    let tnace = it.next().unwrap();
-    let tnack = it.next().unwrap();
+    let _pcddc = it.next().unwrap();
+    let _pcdce = it.next().unwrap();
     let tnadi = it.next().unwrap();
+    let tnack = it.next().unwrap();
+    let tnace = it.next().unwrap();
     // Shift 2 done
-
     let mut disp_hd44780 = HD44780::new_4bit(rs, en, d4, d5, d6, d7, delay);
     disp_hd44780.set_cursor_visibility(Cursor::Invisible);
     disp_hd44780.set_cursor_blink(CursorBlink::Off);
 
-    let pcddin = gpioa.pa1.into_push_pull_output();
-    let pcdclk = gpioa.pa0.into_push_pull_output();
+    let _pcddin = gpioa.pa1.into_push_pull_output();
+    let _pcdclk = gpioa.pa0.into_push_pull_output();
+    let mut disp_tna = tnarx::Tnarx::new(tnace, tnack, tnadi);
 
     let text_ssd = [
         "Consistent APIs",
@@ -147,6 +149,8 @@ fn main() -> ! {
         "code necessary",
     ];
     let mut text_hd_counter = 0;
+    let text_tna = ["semver", "stable", "checked", "community", "safe"];
+    let mut text_tna_counter = 0;
     loop {
         disp_hd44780.reset();
         disp_hd44780.clear();
@@ -173,6 +177,14 @@ fn main() -> ! {
         if text_ili_counter == text_ili.len() {
             text_ili_counter = 0;
         }
+        disp_tna.erase();
+        disp_tna.write_str(text_tna[text_tna_counter]);
+        text_tna_counter += 1;
+        if text_tna_counter == text_tna.len() {
+            text_tna_counter = 0;
+        }
+        disp_tna.flush();
+
         // We (probably) have an overflow with 1Hz
         for _ in 0..10 {
             block!(timer.wait()).ok();
