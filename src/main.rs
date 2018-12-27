@@ -135,12 +135,14 @@ fn main() -> ! {
     let text_ili = [
         "This is (mostly) based on existing libs",
         "Source available on https://github.com/david-sawatzke/emrust-demo",
-        "Register access is the same across families and even vendors",
         "Using embedded_hal, libraries can be easiliy used on all suported platforms",
-        "Prevents race conditions",
+        "Register access is the same across families and even vendors",
+        "This uses embedded-hal, stm32f0xx-hal, svd2rust, embedded-graphics, shift-register-driver, the display drives, and (of course) rust",
     ];
     let mut text_ili_counter = 0;
     let text_hd = [
+        "Prevents race",
+        "conditions",
         "Little-to-no",
         "overhead",
         "Checked register",
@@ -149,7 +151,7 @@ fn main() -> ! {
         "code necessary",
     ];
     let mut text_hd_counter = 0;
-    let text_tna = ["semver", "stable", "checked", "community", "safe"];
+    let text_tna = ["STABLE", "CHECKED", "SAFE", "FAST", "POWERFULL"];
     let mut text_tna_counter = 0;
     loop {
         disp_hd44780.reset();
@@ -202,7 +204,7 @@ where
     }
     let mut pos = 0;
     let mut y_pos = 0;
-    while pos + 1 < text.len() {
+    while pos < text.len() {
         let remaining = if x as usize <= text.len() - 1 - pos {
             x as usize
         } else {
